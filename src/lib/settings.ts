@@ -4,12 +4,14 @@ export interface AppSettings {
     units: 'metric' | 'imperial';
     dark: boolean;
     speedInMph: boolean;
+    keepScreenOn: boolean;
 }
 
 const defaultSettings: AppSettings = {
     units: 'metric',
     dark: false,
     speedInMph: false,
+    keepScreenOn: true,
 };
 
 const storedSettings = typeof window !== 'undefined' ? localStorage.getItem('ftms:settings') : null;

@@ -2,6 +2,19 @@ import { writable, get } from 'svelte/store';
 import { ftmsStore, type FtmsData } from './ftms-store';
 import { settings } from './settings';
 
+const FTMS_SERVICE_UUID = '00001826-0000-1000-8000-00805f9b34fb';
+const INDOOR_BIKE_DATA_CHARACTERISTIC_UUID = '00002ad2-0000-1000-8000-00805f9b34fb';
+
+const CYCLING_POWER_SERVICE_UUID = '00001818-0000-1000-8000-00805f9b34fb';
+const CYCLING_POWER_MEASUREMENT_CHARACTERISTIC_UUID = '00002a63-0000-1000-8000-00805f9b34fb';
+
+const HEART_RATE_SERVICE_UUID = '0000180d-0000-1000-8000-00805f9b34fb';
+const HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID = '00002a37-0000-1000-8000-00805f9b34fb';
+
+const FTMS_SERVICE_SHORT_UUID = 0x1826;
+const CYCLING_POWER_SERVICE_SHORT_UUID = 0x1818;
+const HEART_RATE_SERVICE_SHORT_UUID = 0x180D;
+
 export const ftmsDevice = writable<BluetoothDevice | null>(null);
 export const hrDevice = writable<BluetoothDevice | null>(null);
 export const isScanning = writable(false);
@@ -90,9 +103,9 @@ export async function connectFTMS(device: BluetoothDevice) {
         const server = await device.gatt?.connect();
         if (!server) throw new Error('GATT connect failed');
 
-        const cpService = await server.getPrimaryService('00001818-0000-1000-8000-00805f9b34fb').catch(() => null);
+        const cpService = await server.getPrimaryService(CYCLING_POWER_SERVICE_UUID).catch(() => null);
         if (cpService) {
-            const cpChar = await cpService.getCharacteristic('00002a63-0000-1000-8000-00805f9b34fb');
+            const cpChar = await cpService.getCharacteristic(CYCLING_POWER_MEASUREMENT_CHARACTERISTIC_UUID);
             _cpChar = cpChar;
             await cpChar.startNotifications();
             cpChar.addEventListener('characteristicvaluechanged', (ev: Event) => {
@@ -105,9 +118,9 @@ export async function connectFTMS(device: BluetoothDevice) {
             });
         }
 
-        const fitnessService = await server.getPrimaryService('00001826-0000-1000-8000-00805f9b34fb').catch(() => null);
+        const fitnessService = await server.getPrimaryService(FTMS_SERVICE_UUID).catch(() => null);
         if (fitnessService) {
-            const ibChar = await fitnessService.getCharacteristic('00002ad2-0000-1000-8000-00805f9b34fb').catch(() => null);
+            const ibChar = await fitnessService.getCharacteristic(INDOOR_BIKE_DATA_CHARACTERISTIC_UUID).catch(() => null);
             if (ibChar) {
                 _ftmsChar = ibChar;
                 await ibChar.startNotifications();
@@ -146,8 +159,8 @@ export async function connectHR(device: BluetoothDevice) {
         const server = await device.gatt?.connect();
         if (!server) throw new Error('GATT connect failed');
 
-        const hrService = await server.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
-        const hrChar = await hrService.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
+        const hrService = await server.getPrimaryService(HEART_RATE_SERVICE_UUID);
+        const hrChar = await hrService.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID);
         _hrChar = hrChar;
         await hrChar.startNotifications();
         hrChar.addEventListener('characteristicvaluechanged', (ev: Event) => {
@@ -171,8 +184,7 @@ export async function scanForFTMS() {
     isScanning.set(true);
     try {
         const device = await navigator.bluetooth.requestDevice({
-            filters: [{ services: ['fitness_machine'] }, { services: ['cycling_power'] }],
-            optionalServices: ['fitness_machine', 'cycling_power']
+            filters: [{ services: [FTMS_SERVICE_SHORT_UUID, CYCLING_POWER_SERVICE_SHORT_UUID] }]
         });
         if (device) {
             availableFTMSDevices.update(devices => [...devices, device]);
@@ -200,8 +212,7 @@ export async function scanForHR() {
     isScanning.set(true);
     try {
         const device = await navigator.bluetooth.requestDevice({
-            filters: [{ services: ['heart_rate'] }],
-            optionalServices: ['heart_rate']
+            filters: [{ services: [HEART_RATE_SERVICE_SHORT_UUID] }]
         });
         if (device) {
             availableHRDevices.update(devices => [...devices, device]);
@@ -224,13 +235,13 @@ export async function disconnectFTMS(device: BluetoothDevice) {
     if (_ftmsChar) {
         try {
             await _ftmsChar.stopNotifications();
-        } catch {}
+        } catch { }
         _ftmsChar = null;
     }
     if (_cpChar) {
         try {
             await _cpChar.stopNotifications();
-        } catch {}
+        } catch { }
         _cpChar = null;
     }
     await disconnectDevice(device);
@@ -241,7 +252,7 @@ export async function disconnectHR(device: BluetoothDevice) {
     if (_hrChar) {
         try {
             await _hrChar.stopNotifications();
-        } catch {}
+        } catch { }
         _hrChar = null;
     }
     await disconnectDevice(device);

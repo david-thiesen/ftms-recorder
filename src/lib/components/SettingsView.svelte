@@ -153,6 +153,18 @@
                         </label>
                     </div>
 
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-start gap-4">
+                            <span class="label-text">Keep screen on</span>
+                            <input
+                                type="checkbox"
+                                class="toggle"
+                                bind:checked={$settings.keepScreenOn}
+                                id="keepScreenOn"
+                            />
+                        </label>
+                    </div>
+
                     <div class="form-control pt-4">
                         <button type="button" class="btn btn-ghost" onclick={resetSettings}>
                             Reset to defaults
