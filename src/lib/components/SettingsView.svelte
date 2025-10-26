@@ -44,12 +44,12 @@
                             {#if $ftmsDevice}
                                 <div class="flex items-center gap-2">
                                     <span class="text-sm opacity-75">{$ftmsDevice.name}</span>
-                                    <button class="btn btn-ghost btn-sm" on:click={() => disconnectFTMS($ftmsDevice)}>
+                                    <button class="btn btn-ghost btn-sm" onclick={() => disconnectFTMS($ftmsDevice)}>
                                         Disconnect
                                     </button>
                                 </div>
                             {:else}
-                                <button class="btn btn-primary" on:click={scanForFTMS} disabled={$isScanning}>
+                                <button class="btn btn-primary" onclick={scanForFTMS} disabled={$isScanning}>
                                     {$isScanning ? 'Scanning...' : 'Scan for devices'}
                                 </button>
                             {/if}
@@ -60,7 +60,7 @@
                                 {#each $availableFTMSDevices as device}
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm">{device.name || 'Unknown Device'}</span>
-                                        <button class="btn btn-outline btn-sm" on:click={() => connectFTMS(device)}>
+                                        <button class="btn btn-outline btn-sm" onclick={() => connectFTMS(device)}>
                                             Connect
                                         </button>
                                     </div>
@@ -76,12 +76,12 @@
                             {#if $hrDevice}
                                 <div class="flex items-center gap-2">
                                     <span class="text-sm opacity-75">{$hrDevice.name}</span>
-                                    <button class="btn btn-ghost btn-sm" on:click={() => disconnectHR($hrDevice)}>
+                                    <button class="btn btn-ghost btn-sm" onclick={() => disconnectHR($hrDevice)}>
                                         Disconnect
                                     </button>
                                 </div>
                             {:else}
-                                <button class="btn btn-primary" on:click={scanForHR} disabled={$isScanning}>
+                                <button class="btn btn-primary" onclick={scanForHR} disabled={$isScanning}>
                                     {$isScanning ? 'Scanning...' : 'Scan for devices'}
                                 </button>
                             {/if}
@@ -92,7 +92,7 @@
                                 {#each $availableHRDevices as device}
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm">{device.name || 'Unknown Device'}</span>
-                                        <button class="btn btn-outline btn-sm" on:click={() => connectHR(device)}>
+                                        <button class="btn btn-outline btn-sm" onclick={() => connectHR(device)}>
                                             Connect
                                         </button>
                                     </div>
@@ -108,21 +108,21 @@
         <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <h3 class="mb-4 card-title text-lg">App Settings</h3>
-                <form on:submit|preventDefault class="space-y-4">
+                <form onsubmit={(e) => e.preventDefault()} class="space-y-4">
                     <fieldset class="form-control">
                         <legend class="label-text mb-2">Units</legend>
                         <div class="flex gap-2">
                             <button
                                 type="button"
                                 class={$settings.units === 'metric' ? 'btn btn-primary' : 'btn btn-outline'}
-                                on:click={() => $settings.units = 'metric'}
+                                onclick={() => $settings.units = 'metric'}
                             >
                                 Metric (km)
                             </button>
                             <button
                                 type="button"
                                 class={$settings.units === 'imperial' ? 'btn btn-primary' : 'btn btn-outline'}
-                                on:click={() => $settings.units = 'imperial'}
+                                onclick={() => $settings.units = 'imperial'}
                             >
                                 Imperial (mi)
                             </button>
@@ -154,7 +154,7 @@
                     </div>
 
                     <div class="form-control pt-4">
-                        <button type="button" class="btn btn-ghost" on:click={resetSettings}>
+                        <button type="button" class="btn btn-ghost" onclick={resetSettings}>
                             Reset to defaults
                         </button>
                     </div>

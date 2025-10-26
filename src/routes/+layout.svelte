@@ -4,8 +4,6 @@
     import { isSimulationMode } from '$lib/settings-store';
     import { start, stop } from '$lib/simulator';
     
-    export const prerender = true;
-    export const trailingSlash = "always";
 
 	let { children } = $props();
 
