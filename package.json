@@ -1,0 +1,52 @@
+{
+	"name": "ftms-recorder",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev --host",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"format": "prettier --write .",
+		"lint": "prettier --check . && eslint .",
+		"predeploy": "npm run build && cp build/index.html build/404.html",
+		"deploy": "gh-pages -d build"
+	},
+	"devDependencies": {
+		"@eslint/compat": "^1.4.0",
+		"@eslint/js": "^9.36.0",
+		"@sveltejs/adapter-static": "^3.0.10",
+		"@sveltejs/kit": "^2.43.2",
+		"@sveltejs/vite-plugin-svelte": "^6.2.0",
+		"@tailwindcss/forms": "^0.5.10",
+		"@tailwindcss/typography": "^0.5.18",
+		"@tailwindcss/vite": "^4.1.16",
+		"@types/node": "^24",
+		"@vitejs/plugin-basic-ssl": "^2.1.0",
+		"autoprefixer": "^10.4.21",
+		"carbon-icons-svelte": "^13.6.0",
+		"daisyui": "^5.3.9",
+		"eslint": "^9.36.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.12.4",
+		"gh-pages": "^6.3.0",
+		"globals": "^16.4.0",
+		"prettier": "^3.6.2",
+		"prettier-plugin-svelte": "^3.4.0",
+		"prettier-plugin-tailwindcss": "^0.6.14",
+		"svelte": "^5.39.5",
+		"svelte-check": "^4.3.2",
+		"svelte-heros-v2": "^3.0.0",
+		"tailwindcss": "^4.1.16",
+		"typescript": "^5.9.2",
+		"typescript-eslint": "^8.44.1",
+		"vite": "^7.1.7"
+	},
+	"dependencies": {
+		"@garmin/fitsdk": "^21.178.0",
+		"lucide-svelte": "^0.548.0"
+	}
+}
