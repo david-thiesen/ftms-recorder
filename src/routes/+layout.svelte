@@ -1,20 +1,20 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-    import { isSimulationMode } from '$lib/settings-store';
-    import { start, stop } from '$lib/simulator';
-    
+	import { isSimulationMode } from '$lib/settings-store';
+	import { start, stop } from '$lib/simulator';
+
 	import { settings } from '$lib/settings';
 
 	let { children } = $props();
 
-    $effect(() => {
-        if ($isSimulationMode) {
-            start();
-        } else {
-            stop();
-        }
-    });
+	$effect(() => {
+		if ($isSimulationMode) {
+			start();
+		} else {
+			stop();
+		}
+	});
 
 	let wakeLock: WakeLockSentinel | null = null;
 

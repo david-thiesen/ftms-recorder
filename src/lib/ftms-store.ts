@@ -3,19 +3,34 @@ import { writable } from 'svelte/store';
 export interface FtmsData {
 	power: number | null;
 	cadence: number | null;
-	activeTime: number | null;
+	workoutTime: number | null;
 	movedDistance: number | null;
 	heartRate: number | null;
 	speed: number | null;
 	pace: number | null;
 }
 
-export const ftmsStore = writable<FtmsData>({
-	power: null,
-	cadence: null,
-	activeTime: 0,
-	movedDistance: 0,
-	heartRate: null,
-	speed: null,
-	pace: null
-});
+function createFtmsStore() {
+	const { subscribe, update, set } = writable<FtmsData>({
+		power: null,
+		cadence: null,
+		workoutTime: 0,
+		movedDistance: 0,
+		heartRate: null,
+		speed: null,
+		pace: null
+	});
+
+	return {
+		subscribe,
+		set,
+		updateData: (newData: Partial<FtmsData>) => {
+			update((currentData) => ({ ...currentData, ...newData }));
+		},
+		resetWorkout: () => {
+			update((s) => ({ ...s, workoutTime: 0, movedDistance: 0 }));
+		}
+	};
+}
+
+export const ftmsStore = createFtmsStore();

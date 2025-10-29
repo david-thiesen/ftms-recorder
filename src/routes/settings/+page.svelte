@@ -1,5 +1,5 @@
 <script>
-    import SettingsView from '$lib/components/SettingsView.svelte';
+	import SettingsView from '$lib/components/SettingsView.svelte';
 </script>
 
 <SettingsView />
