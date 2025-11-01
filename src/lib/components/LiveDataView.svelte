@@ -22,8 +22,7 @@
 			}
 			lastDataTimestamp = Date.now();
 
-			recordData.push({ ...data, movedDistance: totalDistance / 1000, workoutTime: workoutTime });
-		}
+			    	recordData.push({ ...data, movedDistance: totalDistance / 1000, timestamp: Date.now() });		}
 	});
 
 	function formatTime(seconds: number | null): string {
@@ -74,7 +73,7 @@
 
 	async function saveRide() {
 		const now = new Date();
-		const startTime = Utils.convertDateToDateTime(now);
+		const startTime = Utils.convertDateToDateTime(now) - (recordData[0]?.timestamp ? (now.getTime() - recordData[0].timestamp) / 1000: 0);
 		let timestamp = startTime;
 
 		const mesgs = [];
@@ -107,6 +106,7 @@
 		});
 
 		for (const data of recordData) {
+			timestamp = startTime + (data.timestamp - recordData[0].timestamp) / 1000;
 			mesgs.push({
 				mesgNum: Profile.MesgNum.RECORD,
 				timestamp: timestamp,
@@ -116,7 +116,6 @@
 				cadence: data.cadence ?? undefined,
 				power: data.power ?? undefined
 			});
-			timestamp++;
 		}
 
 		mesgs.push({
