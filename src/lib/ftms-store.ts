@@ -8,6 +8,8 @@ export interface FtmsData {
 	heartRate: number | null;
 	speed: number | null;
 	pace: number | null;
+	resistance: number | null;
+	timestamp?: number; // Added for recording
 }
 
 function createFtmsStore() {
@@ -18,7 +20,8 @@ function createFtmsStore() {
 		movedDistance: 0,
 		heartRate: null,
 		speed: null,
-		pace: null
+		pace: null,
+		resistance: null
 	});
 
 	return {

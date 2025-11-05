@@ -10,11 +10,15 @@
 	let recordData: FtmsData[] = [];
 	let workoutTime = 0;
 	let workoutTimer: any;
+	let recordTimer: any;
 	let totalDistance = 0;
 	let lastDataTimestamp: number | undefined;
+	let currentData: FtmsData = {};
 
+	// Update current data on every store change, but don't record yet
 	ftmsStore.subscribe((data) => {
 		if (get(isRecording)) {
+			// Update distance calculation
 			if (data.speed && lastDataTimestamp) {
 				const now = Date.now();
 				const timeDelta = (now - lastDataTimestamp) / 1000; // seconds
@@ -22,7 +26,9 @@
 			}
 			lastDataTimestamp = Date.now();
 
-			    	recordData.push({ ...data, movedDistance: totalDistance / 1000, timestamp: Date.now() });		}
+			// Merge incoming data into current state (partial updates from different characteristics)
+			currentData = { ...currentData, ...data };
+		}
 	});
 
 	function formatTime(seconds: number | null): string {
@@ -39,13 +45,6 @@
 		return `${h}:${m}:${s}`;
 	}
 
-	function formatPace(pace: number | null): string {
-		if (pace === null) return '00:00';
-		const minutes = Math.floor(pace);
-		const seconds = Math.round((pace - minutes) * 60);
-		return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-	}
-
 	async function toggleRecording() {
 		isRecording.update((r) => !r);
 
@@ -54,21 +53,39 @@
 			workoutTime = 0;
 			totalDistance = 0;
 			recordData = [];
+			currentData = {};
 			lastDataTimestamp = Date.now();
+
+			// Timer for workout time display
 			workoutTimer = setInterval(() => {
 				workoutTime++;
+			}, 1000);
+
+			// Timer for recording data snapshots every second
+			recordTimer = setInterval(() => {
+				// Only record if we have some data
+				if (Object.keys(currentData).length > 0) {
+					recordData.push({
+						...currentData,
+						movedDistance: totalDistance / 1000,
+						timestamp: Date.now()
+					});
+				}
 			}, 1000);
 		} else {
 			// Stop recording
 			clearInterval(workoutTimer);
+			clearInterval(recordTimer);
 			await saveRide();
 			recordData = [];
+			currentData = {};
 			lastDataTimestamp = undefined;
 		}
 	}
 
 	onDestroy(() => {
 		if (workoutTimer) clearInterval(workoutTimer);
+		if (recordTimer) clearInterval(recordTimer);
 	});
 
 	async function saveRide() {
@@ -114,7 +131,8 @@
 				enhancedSpeed: data.speed ?? undefined,
 				heartRate: data.heartRate ?? undefined,
 				cadence: data.cadence ?? undefined,
-				power: data.power ?? undefined
+				power: data.power ?? undefined,
+				resistance: data.resistance ?? undefined
 			});
 		}
 
@@ -224,9 +242,9 @@
 
 			<div class="card bg-base-100 shadow">
 				<div class="card-body flex flex-col items-center justify-center p-4 text-center">
-					<h3 class="text-lg font-medium">Pace</h3>
+					<h3 class="text-lg font-medium">Resistance</h3>
 					<p class="text-4xl font-bold">
-						{formatPace($ftmsStore.pace)}<span class="text-lg"> /km</span>
+						{$ftmsStore.resistance ?? 0}
 					</p>
 				</div>
 			</div>

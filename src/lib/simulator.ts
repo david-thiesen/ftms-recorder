@@ -9,6 +9,7 @@ function generateRandomData() {
 	const cadence = Math.floor(Math.random() * 40) + 70; // 70-110 rpm
 	const heartRate = Math.floor(Math.random() * 40) + 100; // 100-140 bpm
 	const speed = power / 10 + (Math.random() - 0.5); // m/s
+	const resistance = Math.floor(Math.random() * 20) + 1; // 1-20 resistance level
 
 	activeTime += 1;
 	movedDistance += speed / 1000; // km
@@ -21,7 +22,8 @@ function generateRandomData() {
 		speed,
 		activeTime,
 		movedDistance,
-		pace: speed > 0 ? 1 / ((speed * 60) / 1000) : 0 // min/km
+		resistance,
+		pace: null
 	}));
 }
 
@@ -46,6 +48,7 @@ export function stop() {
 		movedDistance: 0,
 		heartRate: null,
 		speed: null,
-		pace: null
+		pace: null,
+		resistance: null
 	});
 }

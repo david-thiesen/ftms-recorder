@@ -46,12 +46,13 @@ function parseIndoorBikeData(value: DataView) {
 	let speedMs: number | null = null;
 	let cadence: number | null = null;
 	let power: number | null = null;
+	let resistance: number | null = null;
 
 	const speedInMph = get(settings).speedInMph;
 
 	// Instantaneous Speed (More Data flag == 0)
 	if (!(flags & 0x01)) {
-		if (value.byteLength < offset + 2) return { speedMs, cadence, power };
+		if (value.byteLength < offset + 2) return { speedMs, cadence, power, resistance };
 		const speedValue = value.getUint16(offset, true) / 100;
 		if (speedInMph) {
 			speedMs = speedValue * 0.44704;
@@ -63,43 +64,44 @@ function parseIndoorBikeData(value: DataView) {
 
 	// Average Speed
 	if (flags & 0x02) {
-		if (value.byteLength < offset + 2) return { speedMs, cadence, power };
+		if (value.byteLength < offset + 2) return { speedMs, cadence, power, resistance };
 		offset += 2;
 	}
 
 	// Instantaneous Cadence
 	if (flags & 0x04) {
-		if (value.byteLength < offset + 2) return { speedMs, cadence, power };
+		if (value.byteLength < offset + 2) return { speedMs, cadence, power, resistance };
 		cadence = value.getUint16(offset, true) / 2;
 		offset += 2;
 	}
 
 	// Average Cadence
 	if (flags & 0x08) {
-		if (value.byteLength < offset + 2) return { speedMs, cadence, power };
+		if (value.byteLength < offset + 2) return { speedMs, cadence, power, resistance };
 		offset += 2;
 	}
 
 	// Total Distance
 	if (flags & 0x10) {
-		if (value.byteLength < offset + 3) return { speedMs, cadence, power };
+		if (value.byteLength < offset + 3) return { speedMs, cadence, power, resistance };
 		offset += 3;
 	}
 
 	// Resistance Level
 	if (flags & 0x20) {
-		if (value.byteLength < offset + 2) return { speedMs, cadence, power };
+		if (value.byteLength < offset + 2) return { speedMs, cadence, power, resistance };
+		resistance = value.getInt16(offset, true);
 		offset += 2;
 	}
 
 	// Instantaneous Power
 	if (flags & 0x40) {
-		if (value.byteLength < offset + 2) return { speedMs, cadence, power };
+		if (value.byteLength < offset + 2) return { speedMs, cadence, power, resistance };
 		power = value.getInt16(offset, true);
 		offset += 2;
 	}
 
-	return { speedMs, cadence, power };
+	return { speedMs, cadence, power, resistance };
 }
 
 async function disconnectDevice(device: BluetoothDevice | null) {
@@ -154,7 +156,8 @@ export async function connectFTMS(device: BluetoothDevice) {
 					ftmsStore.updateData({
 						speed: parsed.speedMs,
 						cadence: parsed.cadence,
-						power: parsed.power
+						power: parsed.power,
+						resistance: parsed.resistance
 					});
 				});
 			}
