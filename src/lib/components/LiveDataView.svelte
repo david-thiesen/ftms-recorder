@@ -89,6 +89,10 @@
 	});
 
 	async function saveRide() {
+		if (recordData.length === 0) {
+			alert('No data was recorded. The ride will not be saved.');
+			return;
+		}
 		const now = new Date();
 		const startTime = Utils.convertDateToDateTime(now) - (recordData[0]?.timestamp ? (now.getTime() - recordData[0].timestamp) / 1000: 0);
 		let timestamp = startTime;

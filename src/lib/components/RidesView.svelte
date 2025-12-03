@@ -6,12 +6,30 @@
 		await loadRides();
 	});
 
-	function downloadRide(ride: Ride) {
+	async function downloadRide(ride: Ride) {
 		const blob = new Blob([ride.data], { type: 'application/vnd.garmin.fit' });
+		const fileName = `${ride.name}.fit`;
+		const file = new File([blob], fileName, { type: 'application/vnd.garmin.fit' });
+
+		if (navigator.share && navigator.canShare({ files: [file] })) {
+			try {
+				await navigator.share({
+					files: [file],
+					title: ride.name,
+					text: 'Download your ride data.'
+				});
+				return;
+			} catch (error) {
+				console.error('Sharing failed:', error);
+				// Fallback to download link if sharing fails
+			}
+		}
+
+		// Fallback for browsers that don't support sharing or if sharing fails
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
-		a.download = `${ride.name}.fit`;
+		a.download = fileName;
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
